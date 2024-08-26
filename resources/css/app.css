@@ -5,3 +5,35 @@
 [x-cloak] {
     display: none;
 }
+
+:root {
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-purple: #370090;
+    --color-red: #F5000A;
+    --color-orange: #FFA700;
+    --color-dark-red: #9A004A;
+}
+
+.bg-custom {
+    background-color: var(--color-white);
+}
+
+.text-custom {
+    color: var(--color-black);
+}
+
+.link-custom {
+    color: var(--color-black);
+    ring: 1px transparent;
+    transition: color 0.3s;
+}
+
+.link-custom:hover {
+    color: var(--color-purple);
+}
+
+.link-custom:focus-visible {
+    outline: none;
+    ring: var(--color-orange);
+}
