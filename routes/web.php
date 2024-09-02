@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\FileUploadController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -22,3 +24,6 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+
+// Subir archivo V1
+Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
