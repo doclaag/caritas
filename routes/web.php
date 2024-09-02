@@ -25,5 +25,10 @@ Route::middleware([
     })->name('dashboard');
 });
 
-// Subir archivo V1
+Route::get('/files/upload', function () {
+    return Inertia::render('Files/Upload');
+})->name('files.upload');
+
+
+// Ruta para subir archivos
 Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
