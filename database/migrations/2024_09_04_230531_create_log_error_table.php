@@ -13,13 +13,14 @@ class CreateLogErrorTable extends Migration
             $table->unsignedBigInteger('usuario_id');
             $table->unsignedBigInteger('vista_id');
             $table->string('descripcion');
-            $table->timestamps();
+            $table->timestamp('fecha')->useCurrent();
 
             $table->index('usuario_id');
             $table->index('vista_id');
 
-            $table->foreign('usuario_id')->references('id')->on('users');
-            $table->foreign('vista_id')->references('id')->on('vistas');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('NO ACTION')->onUpdate('cascade');
+            $table->foreign('vista_id')->references('id')->on('vistas')->onDelete('NO ACTION')->onUpdate('cascade');
+            $table->timestamps();
         });
     }
 

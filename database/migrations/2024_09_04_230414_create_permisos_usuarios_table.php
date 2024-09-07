@@ -12,7 +12,8 @@ class CreatePermisosUsuariosTable extends Migration
             $table->id();
             $table->foreignId('vista_id')->constrained('vistas')->onDelete('no action')->onUpdate('no action');
             $table->foreignId('permiso_id')->constrained('permisos')->onDelete('no action')->onUpdate('no action');
-            $table->foreignId('rol_id')->constrained('roles')->onUpdate('cascade')->onDelete('no action');
+            $table->foreignId('usuarios_roles_id')->constrained('usuarios_roles')->onDelete('cascade')->onUpdate('cascade');
+            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }

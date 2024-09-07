@@ -12,16 +12,17 @@ class CreateArchivosCategoriasTable extends Migration
             $table->id();
             $table->unsignedBigInteger('archivo_id');
             $table->unsignedBigInteger('categoria_id');
-            $table->unsignedBigInteger('user_created');
-            $table->timestamps();
+            $table->unsignedBigInteger('usuarios_id');
 
             $table->index('archivo_id');
             $table->index('categoria_id');
-            $table->index('user_created');
+            $table->index('usuarios_id');
 
             $table->foreign('archivo_id')->references('id')->on('archivos');
             $table->foreign('categoria_id')->references('id')->on('categorias');
-            $table->foreign('user_created')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
+            $table->foreign('usuarios_id')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
+            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
         });
     }
 

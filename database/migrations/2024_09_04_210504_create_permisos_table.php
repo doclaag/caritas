@@ -11,7 +11,7 @@ class CreatePermisosTable extends Migration
         Schema::create('permisos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('descripcion');
+            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
