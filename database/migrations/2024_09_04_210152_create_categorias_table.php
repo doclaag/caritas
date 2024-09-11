@@ -12,7 +12,7 @@ class CreateCategoriasTable extends Migration
             $table->id();
             $table->string('nombre_categoria');
             $table->string('descripcion_categoria');
-            $table->boolean('categoria_principal');
+            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
