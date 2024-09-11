@@ -21,7 +21,6 @@ class CreateArchivosCategoriasTable extends Migration
             $table->foreign('archivo_id')->references('id')->on('archivos');
             $table->foreign('categoria_id')->references('id')->on('categorias');
             $table->foreign('usuarios_id')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
-            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
