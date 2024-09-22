@@ -27,7 +27,7 @@ Route::middleware([
 
 Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
-})->name('files.upload');
+})->name('files');
 
 
 // Ruta para subir archivos
