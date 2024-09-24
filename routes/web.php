@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,3 +35,7 @@ Route::get('/files/upload', function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/upload', [FileUploadController::class, 'upload']);
 });
+
+//Ruta para obtener las categorias.
+Route::get('/get-categorias-principales', [CategoryController::class, 'getCategoriasPrincipales']);
+Route::get('/get-categorias', [CategoryController::class, 'getCategorias']);

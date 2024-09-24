@@ -1,5 +1,40 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+
+// Variables reactivas para las categorías
+const categoriasPrincipales = ref([]);
+const categorias = ref([]);
+
+// Función para obtener las categorías principales
+const fetchCategoriasPrincipales = async () => {
+    try {
+        const response = await fetch('/get-categorias-principales');
+        const data = await response.json();
+        categoriasPrincipales.value = data;
+        console.log(data);
+    } catch (error) {
+        console.error('Error al obtener categorías principales:', error);
+    }
+};
+
+// Función para obtener las categorías
+const fetchCategorias = async () => {
+    try {
+        const response = await fetch('/get-categorias');
+        const data = await response.json();
+        categorias.value = data;
+        console.log(data);
+    } catch (error) {
+        console.error('Error al obtener categorías:', error);
+    }
+};
+
+// Ejecutar las funciones cuando el componente se monte
+onMounted(() => {
+    fetchCategoriasPrincipales();
+    fetchCategorias();
+});
 </script>
 
 <template>
@@ -23,12 +58,28 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
                     <input type="file" name="file" accept=".pdf,.doc,.docx" />
                     <button type="submit">Subir Archivo</button>
                 </form>
+            </div>
 
+            <div class="mt-8">
+                <p class="text-2xl font-medium text-gray-900">Selecciona opciones:</p>
+                
+                <!-- Primer listbox: Categorías Principales -->
+                <label for="categoriasPrincipales">Categorías Principales:</label>
+                <select name="categoriasPrincipales[]" id="categoriasPrincipales" multiple>
+                    <option v-for="categoria in categoriasPrincipales" :key="categoria.id" :value="categoria.id">
+                        {{ categoria.nombre_categoria }}
+                    </option>
+                </select>
 
-
+                <!-- Segundo listbox: Categorías -->
+                <label for="categorias">Categorías:</label>
+                <select name="categorias[]" id="categorias" multiple>
+                    <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
+                        {{ categoria.nombre_categoria }}
+                    </option>
+                </select>
             </div>
         </div>
-
         <!-- <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
             <div>
                 <div class="flex items-center">
