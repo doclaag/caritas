@@ -37,5 +37,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 //Ruta para obtener las categorias.
-Route::get('/get-categorias-principales', [CategoryController::class, 'getCategoriasPrincipales']);
-Route::get('/get-categorias', [CategoryController::class, 'getCategorias']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/categories', [CategoryController::class, 'getCategorias'])->name('categories');
+});
+// Route::get('/categories', [CategoryController::class, 'getCategories'])->name('categories.main');

@@ -15,8 +15,9 @@ class CategoryModel extends Model
      // Las columnas que el modelo puede llenar (Eloquent utilizará estas para las operaciones en masa).
      protected $fillable = [
         'id',
-         'nombre_categoria',      
-         'descripcion_categoria',   
-         'categoria_principal'
-     ];     
+        'nombre_categoria',
+        'descripcion_categoria',
+        'categoria_principal',
+        'categoria_padre'
+     ];
 }
