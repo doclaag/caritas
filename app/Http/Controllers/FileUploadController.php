@@ -4,18 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Archivo;
+use Illuminate\Support\Facades\Auth;
 
 class FileUploadController extends Controller
 {
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:pdf,doc,docx|max:10240', //máx. 10 MB
-        ]);
-
         $file = $request->file('file');
         $destinationPath = 'public/CARITASPRUEBASDOCS';
-
         if (!Storage::exists($destinationPath)) {
             Storage::makeDirectory($destinationPath);
         }
@@ -24,8 +21,22 @@ class FileUploadController extends Controller
         $cleanName = $this->validarNombre($originalName);
         $fileName = $cleanName . '.' . $extension;
         $file->storeAs($destinationPath, $fileName);
-
-        return response()->json(['message' => 'Archivo subido correctamente'], 200);
+        $filePath = Storage::url($destinationPath . '/' . $fileName);
+        //Condición valida que el usuario este autenticado y de esta forma extrae el ID 
+        if (Auth::check()) {
+            $userId = Auth::id();
+        } else {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+        // Insert a la tabla archivos
+        Archivo::create([
+            'nombre_archivo' => $fileName,
+            'ubicacion_archivo' => $filePath,
+            'estado' => $request->input('estado', 0), // Se envía '0' por defecto si no está marcado
+            'publico' => $request->input('publico', 0),  
+            'usuarios_id' => $userId,
+        ]);
+        return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
     }
 
     // Función para validar archivo nombre y cambiarlo.

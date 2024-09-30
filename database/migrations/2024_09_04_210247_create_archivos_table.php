@@ -14,11 +14,10 @@ class CreateArchivosTable extends Migration
             $table->string('ubicacion_archivo');
             $table->boolean('estado')->default(1);
             $table->boolean('publico')->default(0);
-            $table->timestamp('modificado_el')->useCurrent()->useCurrentOnUpdate();
             $table->foreignId('usuarios_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->index('nombre_archivo');
             $table->index('usuarios_id');
-             $table->timestamps();
+            $table->timestamps();
         });
     }
 
