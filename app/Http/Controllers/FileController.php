@@ -31,7 +31,7 @@ class FileController extends Controller
             return response()->json(['error' => 'No autenticado'], 401);
         }
         // Insert a la tabla archivos
-        Archivo::create([
+        File::create([
             'nombre_archivo' => $fileName,
             'ubicacion_archivo' => $filePath,
             'estado' => $request->input('estado', 0), // Se envía '0' por defecto si no está marcado
