@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Archivo;
 use Illuminate\Support\Facades\Auth;
+use App\Models\File;
+use Inertia\Inertia;
 
-class FileUploadController extends Controller
+
+class FileController extends Controller
 {
     public function upload(Request $request)
     {
@@ -22,7 +24,7 @@ class FileUploadController extends Controller
         $fileName = $cleanName . '.' . $extension;
         $file->storeAs($destinationPath, $fileName);
         $filePath = Storage::url($destinationPath . '/' . $fileName);
-        //Condición valida que el usuario este autenticado y de esta forma extrae el ID 
+        //Condición valida que el usuario este autenticado y de esta forma extrae el ID
         if (Auth::check()) {
             $userId = Auth::id();
         } else {
@@ -33,7 +35,7 @@ class FileUploadController extends Controller
             'nombre_archivo' => $fileName,
             'ubicacion_archivo' => $filePath,
             'estado' => $request->input('estado', 0), // Se envía '0' por defecto si no está marcado
-            'publico' => $request->input('publico', 0),  
+            'publico' => $request->input('publico', 0),
             'usuarios_id' => $userId,
         ]);
         return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
@@ -51,4 +53,36 @@ class FileUploadController extends Controller
         $fileName = preg_replace('/[°!"#$%&\/(){}=¿?¡¨*\[\];:|\'´\-\+,.\/\\@¬~`^]/', '', $fileName);
         return $fileName;
     }
+
+     // Listar Archivos
+     public function list(Request $request)
+     {
+         // Obtener archivos desde el modelo Archivo con paginación
+         $files = File::paginate(10)->map(function ($file) {
+             return [
+                 'name' => $file->nombre_archivo,
+                 'url' => $file->ubicacion_archivo,
+                 'estado' => $file->estado,
+                 'publico' => $file->publico,
+                 'usuarios_id' => $file->usuarios_id,
+             ];
+         });
+
+         // Verificar si es una solicitud AJAX o de API y devolver JSON
+         if ($request->wantsJson()) {
+             return response()->json($files, 200);
+         }
+
+         // Respuesta Inertia por defecto
+         return Inertia::render('Files/List', [
+             'files' => $files,
+         ]);
+     }
+
 }
+
+
+
+
+
+

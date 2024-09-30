@@ -13,20 +13,6 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
                 Bienvenido a la plataforma de documentación para los proyectos de la Pastoral Social-Caritas de la Arquidiócesis de Los Altos.
                 Aquí encontrarás toda la información y recursos necesarios para apoyar y gestionar los proyectos de nuestra comunidad. ¡Gracias por formar parte de esta noble causa!
             </p>
-
-            <div>
-                <p class="mt-8 text-2xl font-medium text-gray-900">
-                    Realiza tu carga de archivos acá:
-                </p>
-
-                <form action="/upload" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="file" accept=".pdf,.doc,.docx" />
-                    <button type="submit">Subir Archivo</button>
-                </form>
-
-
-
-            </div>
         </div>
 
         <!-- <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
