@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
 
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -29,7 +28,7 @@ Route::middleware([
 Route::get('/files/list', [FileController::class, 'list'])->name('list');
 Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
-})->name('files.upload');
+})->name('files');
 
 // Ruta para subir archivos
 Route::middleware(['auth'])->group(function () {

@@ -46,7 +46,7 @@ import NavLink from '@/Components/NavLink.vue';
                     <!-- Botón para subir el archivo -->
                     <PrimaryButton v-if=" selectedFile " @click=" uploadFile " class="mt-4 w-full justify-center">
                         Subir Archivo
-                    </button>
+                    </PrimaryButton>
                     <div>
                     <!-- Checkbox para "estado" -->
                     <label>
