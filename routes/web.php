@@ -4,7 +4,7 @@ use App\Http\Controllers\CategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\FileController;
 
 
 Route::get('/', function () {
@@ -26,18 +26,19 @@ Route::middleware([
     })->name('dashboard');
 });
 
+// RUTA ARCHIVOS
+Route::get('/files/list', [FileController::class, 'list'])->name('list');
 Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
-})->name('files.upload');
+})->name('files');
 
 
 // Ruta para subir archivos
 Route::middleware(['auth'])->group(function () {
-    Route::post('/upload', [FileUploadController::class, 'upload']);
+    Route::post('/files/upload', [FileController::class, 'upload']);
 });
 
 //Ruta para obtener las categorias.
 Route::middleware(['auth'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'getCategorias'])->name('categories');
 });
-// Route::get('/categories', [CategoryController::class, 'getCategories'])->name('categories.main');

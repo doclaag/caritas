@@ -57,6 +57,11 @@ const logout = () => {
                                     Categoría
                                 </NavLink>
                             </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('list')" :active="route().current('files')">
+                                    Archivos
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
