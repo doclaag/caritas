@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\FileController;
 
 
 Route::get('/', function () {
@@ -25,10 +25,8 @@ Route::middleware([
     })->name('dashboard');
 });
 
+// RUTA ARCHIVOS
+Route::get('/files/list', [FileController::class, 'list'])->name('list');
 Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
 })->name('files');
-
-
-// Ruta para subir archivos
-Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
