@@ -146,6 +146,10 @@ const logout = () => {
                                             API Tokens
                                         </DropdownLink>
 
+                                        <DropdownLink :href="route('register')">
+                                            Registrarse
+                                        </DropdownLink>
+
                                         <div class="border-t border-gray-200" />
 
                                         <!-- Authentication -->

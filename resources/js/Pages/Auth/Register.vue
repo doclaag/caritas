@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
+import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticationCard from "@/Components/AuthenticationCard.vue";
 import AuthenticationCardLogo from "@/Components/AuthenticationCardLogo.vue";
 import Checkbox from "@/Components/Checkbox.vue";
@@ -8,7 +8,6 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import axios from "axios";
 
 const form = useForm({
     name: "",
@@ -19,19 +18,12 @@ const form = useForm({
     roles: [],
     gender: "",
 });
-const roles = ref([]);
 
-onMounted(async () => {
-    try {
-        const response = await axios.get("/api/roles");
-        roles.value = response.data;
-    } catch (error) {
-        console.error("Error fetching roles:", error);
-    }
-});
+const { props } = usePage();
+const roles = ref(props.roles);
 
 const submit = () => {
-    form.post(route("register"), {
+    form.post(route("register.store"), {
         onFinish: () => form.reset("password", "password_confirmation"),
     });
 };
@@ -134,9 +126,9 @@ const submit = () => {
                             v-model="form.roles"
                             class="mr-2"
                         />
-                        <label :for="'role-' + role.id">{{
+                        <span class="ml-2 text-sm text-gray-600">{{
                             role.nombre
-                        }}</label>
+                        }}</span>
                     </div>
                 </div>
                 <InputError class="mt-2" :message="form.errors.roles" />
@@ -177,13 +169,6 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    ¿Ya está registrado?
-                </Link>
-
                 <PrimaryButton
                     class="ms-4"
                     :class="{ 'opacity-25': form.processing }"
