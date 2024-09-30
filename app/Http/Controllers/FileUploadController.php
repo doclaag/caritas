@@ -32,8 +32,8 @@ class FileUploadController extends Controller
         Archivo::create([
             'nombre_archivo' => $fileName,
             'ubicacion_archivo' => $filePath,
-            'estado' => 1,
-            'publico' => $request->has('publico') ? 1 : 0,
+            'estado' => $request->input('estado', 0), // Se envía '0' por defecto si no está marcado
+            'publico' => $request->input('publico', 0),  
             'usuarios_id' => $userId,
         ]);
         return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
