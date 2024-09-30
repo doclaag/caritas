@@ -47,28 +47,22 @@ import NavLink from '@/Components/NavLink.vue';
                     <PrimaryButton v-if=" selectedFile " @click=" uploadFile " class="mt-4 w-full justify-center">
                         Subir Archivo
                     </PrimaryButton>
+                    <div>
+                    <!-- Checkbox para "estado" -->
+                    <label>
+                    <input type="checkbox" v-model="form.estado" true-value="1" false-value="0" />
+                    Estado/Eliminado
+                    </label>
+
+                    <!-- Checkbox para "publico" -->
+                    <label>
+                    <input type="checkbox" v-model="form.publico" true-value="1" false-value="0" />
+                    Público
+                    </label>
                 </div>
             </div>
         </div>
-
-        <!-- DialogModal -->
-        <DialogModal :show=" displayingToken " @close="displayingToken = false">
-            <template #title>
-                Éxito
-            </template>
-
-            <template #content>
-                <div>
-                    Su archivo ha sido agregado con éxito.
-                </div>
-            </template>
-
-            <template #footer>
-                <PrimaryButton @click="displayingToken = false">
-                    Close
-                </PrimaryButton>
-            </template>
-        </DialogModal>
+    </div>
     </AppLayout>
 </template>
 
@@ -76,8 +70,11 @@ import NavLink from '@/Components/NavLink.vue';
 export default {
     data() {
         return {
-            selectedFile: null,
-            displayingToken: false
+            form: {
+                estado: 0,   // Valor por defecto 0 (desmarcado)
+                publico: 0,  // Valor por defecto 0 (desmarcado)
+            },
+            selectedFile: null // Archivo seleccionado
         };
     },
     methods: {
@@ -109,7 +106,9 @@ export default {
             }
 
             const formData = new FormData();
-            formData.append( 'file', this.selectedFile );
+            formData.append('file', this.selectedFile);
+            formData.append('estado', this.form.estado); // Agregar estado al FormData
+            formData.append('publico', this.form.publico); // Agregar publico al FormData
 
             try {
                 const response = await fetch( '/upload', {

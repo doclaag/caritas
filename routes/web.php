@@ -30,3 +30,9 @@ Route::get('/files/list', [FileController::class, 'list'])->name('list');
 Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
 })->name('files');
+
+
+// Ruta para subir archivos
+Route::middleware(['auth'])->group(function () {
+    Route::post('/files/upload', [FileController::class, 'upload']);
+});
