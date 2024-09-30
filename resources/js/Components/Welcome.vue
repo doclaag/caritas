@@ -48,38 +48,8 @@ onMounted(() => {
                 Bienvenido a la plataforma de documentación para los proyectos de la Pastoral Social-Caritas de la Arquidiócesis de Los Altos.
                 Aquí encontrarás toda la información y recursos necesarios para apoyar y gestionar los proyectos de nuestra comunidad. ¡Gracias por formar parte de esta noble causa!
             </p>
-
-            <div>
-                <p class="mt-8 text-2xl font-medium text-gray-900">
-                    Realiza tu carga de archivos acá:
-                </p>
-
-                <form action="/upload" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="file" accept=".pdf,.doc,.docx" />
-                    <button type="submit">Subir Archivo</button>
-                </form>
-            </div>
-
-            <div class="mt-8">
-                <p class="text-2xl font-medium text-gray-900">Selecciona opciones:</p>
-                
-                <!-- Primer listbox: Categorías Principales -->
-                <label for="categoriasPrincipales">Categorías Principales:</label>
-                <select name="categoriasPrincipales[]" id="categoriasPrincipales" multiple>
-                    <option v-for="categoria in categoriasPrincipales" :key="categoria.id" :value="categoria.id">
-                        {{ categoria.nombre_categoria }}
-                    </option>
-                </select>
-
-                <!-- Segundo listbox: Categorías -->
-                <label for="categorias">Categorías:</label>
-                <select name="categorias[]" id="categorias" multiple>
-                    <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
-                        {{ categoria.nombre_categoria }}
-                    </option>
-                </select>
-            </div>
         </div>
+
         <!-- <div class="bg-gray-200 bg-opacity-25 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 p-6 lg:p-8">
             <div>
                 <div class="flex items-center">

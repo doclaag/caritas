@@ -102,9 +102,6 @@ const filteredItems = computed(() => {
 <template>
     <AppLayout title="Categories">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Categorías
-            </h2>
             <nav class="flex space-x-4 mt-4">
                 <button @click="activeTab = 'busqueda'" :class="{'text-blue-500': activeTab === 'busqueda'}">Búsqueda</button>
                 <button @click="activeTab = 'rutas'" :class="{'text-blue-500': activeTab === 'rutas'}">Rutas</button>
