@@ -1,5 +1,40 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+
+// Variables reactivas para las categorías
+const categoriasPrincipales = ref([]);
+const categorias = ref([]);
+
+// Función para obtener las categorías principales
+const fetchCategoriasPrincipales = async () => {
+    try {
+        const response = await fetch('/get-categorias-principales');
+        const data = await response.json();
+        categoriasPrincipales.value = data;
+        console.log(data);
+    } catch (error) {
+        console.error('Error al obtener categorías principales:', error);
+    }
+};
+
+// Función para obtener las categorías
+const fetchCategorias = async () => {
+    try {
+        const response = await fetch('/get-categorias');
+        const data = await response.json();
+        categorias.value = data;
+        console.log(data);
+    } catch (error) {
+        console.error('Error al obtener categorías:', error);
+    }
+};
+
+// Ejecutar las funciones cuando el componente se monte
+onMounted(() => {
+    fetchCategoriasPrincipales();
+    fetchCategorias();
+});
 </script>
 
 <template>
