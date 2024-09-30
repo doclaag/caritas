@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Archivo;
 use Illuminate\Support\Facades\Auth;
+use App\Models\File;
+use Inertia\Inertia;
 
-class FileUploadController extends Controller
+
+class FileController extends Controller
 {
     public function upload(Request $request)
     {
@@ -51,4 +53,36 @@ class FileUploadController extends Controller
         $fileName = preg_replace('/[°!"#$%&\/(){}=¿?¡¨*\[\];:|\'´\-\+,.\/\\@¬~`^]/', '', $fileName);
         return $fileName;
     }
+
+     // Listar Archivos
+     public function list(Request $request)
+     {
+         // Obtener archivos desde el modelo Archivo con paginación
+         $files = File::paginate(10)->map(function ($file) {
+             return [
+                 'name' => $file->nombre_archivo,
+                 'url' => $file->ubicacion_archivo,
+                 'estado' => $file->estado,
+                 'publico' => $file->publico,
+                 'usuarios_id' => $file->usuarios_id,
+             ];
+         });
+
+         // Verificar si es una solicitud AJAX o de API y devolver JSON
+         if ($request->wantsJson()) {
+             return response()->json($files, 200);
+         }
+
+         // Respuesta Inertia por defecto
+         return Inertia::render('Files/List', [
+             'files' => $files,
+         ]);
+     }
+
 }
+
+
+
+
+
+
