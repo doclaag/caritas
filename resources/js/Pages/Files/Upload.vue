@@ -96,7 +96,6 @@ export default {
                 }
 
                 this.selectedFile = file;
-                console.log( file );
             }
         },
         async uploadFile() {
@@ -111,7 +110,7 @@ export default {
             formData.append('publico', this.form.publico); // Agregar publico al FormData
 
             try {
-                const response = await fetch( '/upload', {
+                const response = await fetch( '/files/upload', {
                     method: 'POST',
                     body: formData,
                 } );
