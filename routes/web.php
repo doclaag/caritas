@@ -31,4 +31,6 @@ Route::get('/files/upload', function () {
 
 
 // Ruta para subir archivos
-Route::post('/upload', [FileUploadController::class, 'upload'])->name('upload');
+Route::middleware(['auth'])->group(function () {
+    Route::post('/upload', [FileUploadController::class, 'upload']);
+});

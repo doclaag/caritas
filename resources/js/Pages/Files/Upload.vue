@@ -20,7 +20,7 @@
                             <span class="upload__filename">{{ selectedFile.name }}</span>
                         </div>
                         <input type="file" class="upload__input" id="upload" name="file" accept=".pdf,.doc,.docx"
-                            ref="fileInput" />
+                            ref="fileInput" @change="handleFileUpload" />
                         <label for="upload" class="upload__label">
                             <div class="upload__icon">
                                 <svg t="1581822650945" class="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -38,9 +38,22 @@
                     <button v-if="selectedFile" class="upload__button" @click="uploadFile">
                         Subir Archivo
                     </button>
+                    <div>
+                    <!-- Checkbox para "estado" -->
+                    <label>
+                    <input type="checkbox" v-model="form.estado" true-value="1" false-value="0" />
+                    Estado/Eliminado
+                    </label>
+
+                    <!-- Checkbox para "publico" -->
+                    <label>
+                    <input type="checkbox" v-model="form.publico" true-value="1" false-value="0" />
+                    Público
+                    </label>
                 </div>
             </div>
         </div>
+    </div>
     </AppLayout>
 </template>
 
@@ -48,7 +61,11 @@
 export default {
     data() {
         return {
-            selectedFile: null
+            form: {
+                estado: 0,   // Valor por defecto 0 (desmarcado)
+                publico: 0,  // Valor por defecto 0 (desmarcado)
+            },
+            selectedFile: null // Archivo seleccionado
         };
     },
     methods: {
@@ -81,6 +98,8 @@ export default {
 
             const formData = new FormData();
             formData.append('file', this.selectedFile);
+            formData.append('estado', this.form.estado); // Agregar estado al FormData
+            formData.append('publico', this.form.publico); // Agregar publico al FormData
 
             try {
                 const response = await fetch('/upload', {
