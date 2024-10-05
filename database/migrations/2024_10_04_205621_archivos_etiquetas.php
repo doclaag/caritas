@@ -19,8 +19,8 @@ return new class extends Migration
             $table->index('archivo_id');
             $table->index('etiqueta_id');
 
-            $table->foreignId('archivo_id')->constrained('archivos')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('etiqueta_id')->constrained('etiquetas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('archivo_id')->references('id')->on('archivos')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('etiqueta_id')->references('id')->on('etiquetas')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
