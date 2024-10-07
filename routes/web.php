@@ -5,7 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\FileController;
-
+use App\Http\Controllers\TagController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -41,4 +41,5 @@ Route::middleware(['auth'])->group(function () {
 //Ruta para obtener las categorias.
 Route::middleware(['auth'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'getCategorias'])->name('categories');
+    Route::get('/tags', [TagController::class, 'index']);
 });

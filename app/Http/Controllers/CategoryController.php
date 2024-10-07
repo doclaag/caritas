@@ -13,18 +13,15 @@ class CategoryController extends Controller
     public function getCategorias(Request $request)
     {
         $categoriasPrincipales = CategoryModel::where('categoria_principal', 1)->get();
-        $categoriasSecundarias = CategoryModel::where('categoria_principal', 0)->get();
     
         if ($request->wantsJson()) {
             return response()->json([
-                'principales' => $categoriasPrincipales,
-                'secundarias' => $categoriasSecundarias,
+                'principales' => $categoriasPrincipales
             ]);
         }
     
         return Inertia::render('Categories/Main', [
             'principales' => $categoriasPrincipales,
-            'secundarias' => $categoriasSecundarias,
         ]);
     }
 }

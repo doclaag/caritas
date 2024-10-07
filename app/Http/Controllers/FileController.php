@@ -7,51 +7,75 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use App\Models\CategoryModel;
+use App\Models\FileTag;
 use Inertia\Inertia;
 
 
 class FileController extends Controller
 {
     public function upload(Request $request)
-{
-    $categoriaPrincipalId = $request->input('categoria');
-    $categoriaPrincipal = CategoryModel::find($categoriaPrincipalId);
-    if (!$categoriaPrincipal) {
-        return response()->json(['error' => 'Categoría no encontrada'], 400);
+    {
+        $categoriaPrincipalId = $request->input('categoria');
+        $categoriaPrincipal = CategoryModel::find($categoriaPrincipalId);
+        if (!$categoriaPrincipal) {
+            return response()->json(['error' => 'Categoría no encontrada'], 400);
+        }
+        $categoriaPrincipalNombre = $categoriaPrincipal->nombre_categoria;
+        $destinationPath = 'public/CARITASPRUEBASDOCS/' . $categoriaPrincipalNombre;
+
+        // Verificar si la carpeta existe, si no, crearla
+        if (!Storage::exists($destinationPath)) {
+            Storage::makeDirectory($destinationPath);
+        }
+
+        $file = $request->file('file');
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = $file->getClientOriginalExtension();
+        $cleanName = $this->validarNombre($originalName);
+        $fileName = $cleanName . '.' . $extension;
+        $filePath = $destinationPath . '/' . $fileName;
+
+        // Verificar si el archivo ya existe
+        if (Storage::exists($filePath)) {
+            if ($request->input('action') === 'replace') {
+                Storage::delete($filePath);
+            } elseif ($request->input('action') === 'rename') {
+                $fileName = $cleanName . '_' . time() . '.' . $extension;
+                $filePath = $destinationPath . '/' . $fileName;
+            } else {
+                return response()->json(['message' => 'El archivo ya existe', 'action' => 'exists'], 409);
+            }
+        }
+
+        // Guardar el archivo en la carpeta correspondiente
+        $file->storeAs($destinationPath, $fileName);
+
+        $fileUrl = Storage::url($filePath);
+
+        // Verificar si el usuario está autenticado
+        if (Auth::check()) {
+            $userId = Auth::id();
+        } else {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+
+        // Crear el registro del archivo
+        $archivo = File::create([
+            'nombre_archivo' => $fileName,
+            'ubicacion_archivo' => $fileUrl,
+            'estado' => $request->input('estado', 0),
+            'publico' => $request->input('publico', 0),
+            'usuarios_id' => $userId,
+        ]);
+
+        // Crear la relación en la tabla archivos_etiquetas
+        FileTag::create([
+            'archivo_id' => $archivo->id,
+            'etiqueta_id' => $request->input('tag'),
+        ]);
+
+        return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
     }
-    $categoriaPrincipalNombre = $categoriaPrincipal->nombre_categoria;
-    $destinationPath = 'public/CARITASPRUEBASDOCS/' . $categoriaPrincipalNombre;
-
-    // Verificar si la carpeta existe, si no, crearla
-    if (!Storage::exists($destinationPath)) {
-        Storage::makeDirectory($destinationPath);
-    }
-    $file = $request->file('file');
-    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-    $extension = $file->getClientOriginalExtension();
-    $cleanName = $this->validarNombre($originalName);
-    $fileName = $cleanName . '.' . $extension;
-
-    // Guardar el archivo en la carpeta correspondiente
-    $file->storeAs($destinationPath, $fileName);
-
-    $filePath = Storage::url($destinationPath . '/' . $fileName);
-
-    // Verificar si el usuario está autenticado
-    if (Auth::check()) {
-        $userId = Auth::id();
-    } else {
-        return response()->json(['error' => 'No autenticado'], 401);
-    }
-    File::create([
-        'nombre_archivo' => $fileName,
-        'ubicacion_archivo' => $filePath,
-        'estado' => $request->input('estado', 0),
-        'publico' => $request->input('publico', 0),
-        'usuarios_id' => $userId,
-    ]);
-    return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
-}
     // Función para validar archivo nombre y cambiarlo.
     private function validarNombre($fileName)
     {
