@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import NavLink from '@/Components/NavLink.vue';
 import axios from 'axios';
 
-// categorias DDL llenado
 const categoriasPrincipales = ref([]);
+const subcategorias = ref([]);
 const etiquetas = ref([]);
 const showModal = ref(false);
 const modalMessage = ref('');
@@ -16,21 +16,28 @@ const form = ref({
     estado: 0,
     publico: 0,
     categoria: '',
+    subcategoria: '',
     tag: '',
 });
 
 onMounted(async () => {
     const response = await axios.get('/categories');
     categoriasPrincipales.value = response.data.principales;
+    etiquetas.value = (await axios.get('/tags')).data;
+});
 
-    const etiquetasResponse = await axios.get('/tags');
-    etiquetas.value = etiquetasResponse.data;
+watch(() => form.value.categoria, async (newCategoriaId) => {
+    if (newCategoriaId) {
+        const response = await axios.get(`/categories/${newCategoriaId}/subcategories`);
+        subcategorias.value = response.data;
+    } else {
+        subcategorias.value = [];
+    }
 });
 
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-        // Validar el tipo de archivo
         const validTypes = ['application/pdf'];
         if (!validTypes.includes(file.type)) {
             alert('Tipo de archivo no permitido. Solo se permiten archivos PDF.');
@@ -53,7 +60,6 @@ const validateAndUploadFile = async () => {
     try {
         await uploadFile();
     } catch (error) {
-        // Aquí es donde se maneja el código 409
         if (error.response && error.response.status === 409) {
             showModal.value = true;  
             modalMessage.value = error.response.data.message;  
@@ -69,6 +75,7 @@ const uploadFile = async (action = '') => {
     formData.append('estado', form.value.estado);
     formData.append('publico', form.value.publico);
     formData.append('categoria', form.value.categoria);
+    formData.append('subcategoria', form.value.subcategoria);
     formData.append('tag', form.value.tag);
     if (action) {
         formData.append('action', action);
@@ -79,6 +86,7 @@ const uploadFile = async (action = '') => {
         alert('Archivo subido exitosamente.');
         selectedFile.value = null;
         form.value.categoria = '';
+        form.value.subcategoria = '';
         form.value.tag = '';
     }
 };
@@ -129,6 +137,16 @@ const handleModalAction = async (action) => {
                             <option value="">Seleccione una categoría</option>
                             <option v-for="categoria in categoriasPrincipales" :key="categoria.id" :value="categoria.id">
                                 {{ categoria.nombre_categoria }}
+                            </option>
+                        </select>
+                    </div>
+                    <!-- DDL Subcategorias -->
+                    <div class="mt-4">
+                        <label for="subcategoria" class="block text-sm font-medium text-gray-700">Subcategorías disponibles</label>
+                        <select id="subcategoria" v-model="form.subcategoria" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">Seleccione una subcategoría</option>
+                            <option v-for="subcategoria in subcategorias" :key="subcategoria.id" :value="subcategoria.id">
+                                {{ subcategoria.nombre_categoria }}
                             </option>
                         </select>
                     </div>

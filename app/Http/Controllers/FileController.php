@@ -10,7 +10,6 @@ use App\Models\CategoryModel;
 use App\Models\FileTag;
 use Inertia\Inertia;
 
-
 class FileController extends Controller
 {
     public function upload(Request $request)
@@ -26,6 +25,21 @@ class FileController extends Controller
         // Verificar si la carpeta existe, si no, crearla
         if (!Storage::exists($destinationPath)) {
             Storage::makeDirectory($destinationPath);
+        }
+
+        // Verificar si se seleccionó una subcategoría
+        $subcategoriaId = $request->input('subcategoria');
+        if ($subcategoriaId) {
+            $subcategoria = CategoryModel::find($subcategoriaId);
+            if ($subcategoria && $subcategoria->categoria_principal == 0) {
+                $subcategoriaNombre = $subcategoria->nombre_categoria;
+                $destinationPath .= '/' . $subcategoriaNombre;
+
+                // Verificar si la subcarpeta existe, si no, crearla
+                if (!Storage::exists($destinationPath)) {
+                    Storage::makeDirectory($destinationPath);
+                }
+            }
         }
 
         $file = $request->file('file');
