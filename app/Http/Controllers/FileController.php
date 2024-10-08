@@ -93,7 +93,8 @@ class FileController extends Controller
      public function list(Request $request)
      {
          // Obtener archivos desde el modelo Archivo con paginación
-         $files = File::paginate(10)->map(function ($file) {
+         $files = File::paginate(10);
+         $files->getCollection()->transform(function ($file) {
              return [
                  'name' => $file->nombre_archivo,
                  'url' => $file->ubicacion_archivo,
@@ -102,16 +103,11 @@ class FileController extends Controller
                  'usuarios_id' => $file->usuarios_id,
              ];
          });
-
-         // Verificar si es una solicitud AJAX o de API y devolver JSON
          if ($request->wantsJson()) {
              return response()->json($files, 200);
          }
-
-         // Respuesta Inertia por defecto
          return Inertia::render('Files/List', [
              'files' => $files,
          ]);
      }
-
 }
