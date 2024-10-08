@@ -83,13 +83,17 @@ class FileController extends Controller
         ]);
 
         // Crear la relación en la tabla archivos_etiquetas
-        FileTag::create([
-            'archivo_id' => $archivo->id,
-            'etiqueta_id' => $request->input('tag'),
-        ]);
+        $tags = explode(',', $request->input('tag'));
+        foreach ($tags as $tag) {
+            FileTag::create([
+                'archivo_id' => $archivo->id,
+                'etiqueta_id' => $tag,
+            ]);
+        }
 
         return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
     }
+
     // Función para validar archivo nombre y cambiarlo.
     private function validarNombre($fileName)
     {
@@ -103,25 +107,25 @@ class FileController extends Controller
         return $fileName;
     }
 
-     // Listar Archivos
-     public function list(Request $request)
-     {
-         // Obtener archivos desde el modelo Archivo con paginación
-         $files = File::paginate(10);
-         $files->getCollection()->transform(function ($file) {
-             return [
-                 'name' => $file->nombre_archivo,
-                 'url' => $file->ubicacion_archivo,
-                 'estado' => $file->estado,
-                 'publico' => $file->publico,
-                 'usuarios_id' => $file->usuarios_id,
-             ];
-         });
-         if ($request->wantsJson()) {
-             return response()->json($files, 200);
-         }
-         return Inertia::render('Files/List', [
-             'files' => $files,
-         ]);
-     }
+    // Listar Archivos
+    public function list(Request $request)
+    {
+        // Obtener archivos desde el modelo Archivo con paginación
+        $files = File::paginate(10);
+        $files->getCollection()->transform(function ($file) {
+            return [
+                'name' => $file->nombre_archivo,
+                'url' => $file->ubicacion_archivo,
+                'estado' => $file->estado,
+                'publico' => $file->publico,
+                'usuarios_id' => $file->usuarios_id,
+            ];
+        });
+        if ($request->wantsJson()) {
+            return response()->json($files, 200);
+        }
+        return Inertia::render('Files/List', [
+            'files' => $files,
+        ]);
+    }
 }
