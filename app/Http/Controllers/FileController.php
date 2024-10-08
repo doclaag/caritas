@@ -10,7 +10,6 @@ use App\Models\CategoryModel;
 use App\Models\FileTag;
 use Inertia\Inertia;
 
-
 class FileController extends Controller
 {
     public function upload(Request $request)
@@ -69,13 +68,17 @@ class FileController extends Controller
         ]);
 
         // Crear la relación en la tabla archivos_etiquetas
-        FileTag::create([
-            'archivo_id' => $archivo->id,
-            'etiqueta_id' => $request->input('tag'),
-        ]);
+        $etiquetas = $request->input('tags', []);
+        foreach ($etiquetas as $etiquetaId) {
+            FileTag::create([
+                'archivo_id' => $archivo->id,
+                'etiqueta_id' => $etiquetaId,
+            ]);
+        }
 
         return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
     }
+
     // Función para validar archivo nombre y cambiarlo.
     private function validarNombre($fileName)
     {
@@ -89,29 +92,28 @@ class FileController extends Controller
         return $fileName;
     }
 
-     // Listar Archivos
-     public function list(Request $request)
-     {
-         // Obtener archivos desde el modelo Archivo con paginación
-         $files = File::paginate(10)->map(function ($file) {
-             return [
-                 'name' => $file->nombre_archivo,
-                 'url' => $file->ubicacion_archivo,
-                 'estado' => $file->estado,
-                 'publico' => $file->publico,
-                 'usuarios_id' => $file->usuarios_id,
-             ];
-         });
+    // Listar Archivos
+    public function list(Request $request)
+    {
+        // Obtener archivos desde el modelo Archivo con paginación
+        $files = File::paginate(10)->map(function ($file) {
+            return [
+                'name' => $file->nombre_archivo,
+                'url' => $file->ubicacion_archivo,
+                'estado' => $file->estado,
+                'publico' => $file->publico,
+                'usuarios_id' => $file->usuarios_id,
+            ];
+        });
 
-         // Verificar si es una solicitud AJAX o de API y devolver JSON
-         if ($request->wantsJson()) {
-             return response()->json($files, 200);
-         }
+        // Verificar si es una solicitud AJAX o de API y devolver JSON
+        if ($request->wantsJson()) {
+            return response()->json($files, 200);
+        }
 
-         // Respuesta Inertia por defecto
-         return Inertia::render('Files/List', [
-             'files' => $files,
-         ]);
-     }
-
+        // Respuesta Inertia por defecto
+        return Inertia::render('Files/List', [
+            'files' => $files,
+        ]);
+    }
 }

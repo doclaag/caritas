@@ -12,7 +12,7 @@ const totalPages = ref( 1 );
 const loading = ref( true );
 const error = ref( null );
 
-const fetchFiles = async ( page = 1 ) => {
+const fetchFiles = async ( page = 2 ) => {
     loading.value = true;
     error.value = null;
 
@@ -23,7 +23,7 @@ const fetchFiles = async ( page = 1 ) => {
             },
             withCredentials: true
         } );
-        console.log( response.data );
+        console.log( response );
         files.value = response.data.data || response.data; // Ajuste para datos paginados o no paginados
         currentPage.value = response.data.current_page || 1;
         totalPages.value = response.data.last_page || 1;

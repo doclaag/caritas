@@ -1,63 +1,36 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\FileTag;
-use Illuminate\Http\Request;
-
-class FileTagController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $archivosEtiquetas = FileTag::all();
-        return response()->json($archivosEtiquetas);
+const validateAndUploadFile = async () => {
+    if (!selectedFile.value) {
+        addNotification('error', 'Por favor, selecciona un archivo primero.');
+        return;
+    }
+    if (!form.value.categoria) {
+        addNotification('error', 'Por favor, selecciona una categoría.');
+        return;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'archivo_id' => 'required|exists:files,id',
-            'etiqueta_id' => 'required|exists:etiquetas,id',
-        ]);
+    try {
+        const formData = new FormData();
+        formData.append('file', selectedFile.value);
+        formData.append('estado', form.value.estado);
+        formData.append('publico', form.value.publico);
+        formData.append('categoria', form.value.categoria);
+        formData.append('tags', JSON.stringify(selectedTags.value)); // Envías los IDs de las etiquetas como un array JSON
+        console.log('Datos enviados:', {
+            file: selectedFile.value.name,
+            estado: form.value.estado,
+            publico: form.value.publico,
+            categoria: form.value.categoria,
+            tags: selectedTags.value
+        });
 
-        $archivoEtiqueta = FileTag::create($request->all());
-        return response()->json($archivoEtiqueta, 201);
+        await uploadFile();
+    } catch (error) {
+        console.error('Error al validar y subir archivo:', error);
+        if (error.response && error.response.status === 409) {
+            modalMessage.value = 'El archivo ya existe. ¿Quieres renombrarlo o reemplazarlo?';
+            showModal.value = true;
+        } else {
+            addNotification('error', 'Error al subir el archivo');
+        }
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(FileTag $archivoEtiqueta)
-    {
-        return response()->json($archivoEtiqueta);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, FileTag $archivoEtiqueta)
-    {
-        $request->validate([
-            'archivo_id' => 'sometimes|required|exists:files,id',
-            'etiqueta_id' => 'sometimes|required|exists:etiquetas,id',
-        ]);
-
-        $archivoEtiqueta->update($request->all());
-        return response()->json($archivoEtiqueta);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(FileTag $archivoEtiqueta)
-    {
-        $archivoEtiqueta->delete();
-        return response()->json(null, 204);
-    }
-}
+};

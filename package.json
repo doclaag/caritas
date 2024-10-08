@@ -19,6 +19,8 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "@inertiajs/inertia-vue3": "^0.6.0"
+        "@heroicons/vue": "^2.1.5",
+        "@inertiajs/inertia-vue3": "^0.6.0",
+        "lucide-vue-next": "^0.447.0"
     }
 }
