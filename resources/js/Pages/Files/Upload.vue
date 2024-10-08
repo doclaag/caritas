@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import CustomLabel from '@/Components/CustomLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -9,6 +9,7 @@ import ToastNotification from '@/Components/ToastNotification.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 
 const categoriasPrincipales = ref([]);
+const subcategorias = ref([]);
 const etiquetas = ref([]);
 const selectedTags = ref([]);
 const showModal = ref(false);
@@ -18,20 +19,23 @@ const form = ref({
     estado: 0,
     publico: 0,
     categoria: '',
+    subcategoria: '',
     tag: '',
 });
 const notifications = ref([]);
 
 onMounted(async () => {
-    try {
-        const response = await axios.get('/categories');
-        categoriasPrincipales.value = response.data.principales;
+    const response = await axios.get('/categories');
+    categoriasPrincipales.value = response.data.principales;
+    etiquetas.value = (await axios.get('/tags')).data;
+});
 
-        const etiquetasResponse = await axios.get('/tags');
-        etiquetas.value = etiquetasResponse.data;
-        console.log('Etiquetas cargadas:', etiquetas.value);
-    } catch (error) {
-        console.error('Error al cargar categorías o etiquetas:', error);
+watch(() => form.value.categoria, async (newCategoriaId) => {
+    if (newCategoriaId) {
+        const response = await axios.get(`/categories/${newCategoriaId}/subcategories`);
+        subcategorias.value = response.data;
+    } else {
+        subcategorias.value = [];
     }
 });
 
@@ -75,8 +79,8 @@ const uploadFile = async (action = '') => {
     formData.append('estado', form.value.estado);
     formData.append('publico', form.value.publico);
     formData.append('categoria', form.value.categoria);
-    formData.append('tags', JSON.stringify(selectedTags.value));
-
+    formData.append('subcategoria', form.value.subcategoria);
+    formData.append('tag', form.value.tag);
     if (action) {
         formData.append('action', action);
     }
@@ -91,8 +95,8 @@ const uploadFile = async (action = '') => {
         addNotification('success', 'Archivo subido exitosamente');
         selectedFile.value = null;
         form.value.categoria = '';
-        form.value.publico = 0;
-        selectedTags.value = [];
+        form.value.subcategoria = '';
+        form.value.tag = '';
     }
 };
 
@@ -180,6 +184,17 @@ const addNotification = (type, message) => {
                             </option>
                         </select>
                     </div>
+                    <!-- DDL Subcategorias -->
+                    <div class="mt-4">
+                        <label for="subcategoria" class="block text-sm font-medium text-gray-700">Subcategorías disponibles</label>
+                        <select id="subcategoria" v-model="form.subcategoria" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">Seleccione una subcategoría</option>
+                            <option v-for="subcategoria in subcategorias" :key="subcategoria.id" :value="subcategoria.id">
+                                {{ subcategoria.nombre_categoria }}
+                            </option>
+                        </select>
+                    </div>
+                    <!-- DDL Etiquetas -->
                     <div class="mt-4">
                         <CustomLabel
     :label="'Etiquetas'"

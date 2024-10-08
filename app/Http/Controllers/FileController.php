@@ -27,6 +27,21 @@ class FileController extends Controller
             Storage::makeDirectory($destinationPath);
         }
 
+        // Verificar si se seleccionó una subcategoría
+        $subcategoriaId = $request->input('subcategoria');
+        if ($subcategoriaId) {
+            $subcategoria = CategoryModel::find($subcategoriaId);
+            if ($subcategoria && $subcategoria->categoria_principal == 0) {
+                $subcategoriaNombre = $subcategoria->nombre_categoria;
+                $destinationPath .= '/' . $subcategoriaNombre;
+
+                // Verificar si la subcarpeta existe, si no, crearla
+                if (!Storage::exists($destinationPath)) {
+                    Storage::makeDirectory($destinationPath);
+                }
+            }
+        }
+
         $file = $request->file('file');
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $extension = $file->getClientOriginalExtension();
@@ -92,28 +107,25 @@ class FileController extends Controller
         return $fileName;
     }
 
-    // Listar Archivos
-    public function list(Request $request)
-    {
-        // Obtener archivos desde el modelo Archivo con paginación
-        $files = File::paginate(10)->map(function ($file) {
-            return [
-                'name' => $file->nombre_archivo,
-                'url' => $file->ubicacion_archivo,
-                'estado' => $file->estado,
-                'publico' => $file->publico,
-                'usuarios_id' => $file->usuarios_id,
-            ];
-        });
-
-        // Verificar si es una solicitud AJAX o de API y devolver JSON
-        if ($request->wantsJson()) {
-            return response()->json($files, 200);
-        }
-
-        // Respuesta Inertia por defecto
-        return Inertia::render('Files/List', [
-            'files' => $files,
-        ]);
-    }
+     // Listar Archivos
+     public function list(Request $request)
+     {
+         // Obtener archivos desde el modelo Archivo con paginación
+         $files = File::paginate(10);
+         $files->getCollection()->transform(function ($file) {
+             return [
+                 'name' => $file->nombre_archivo,
+                 'url' => $file->ubicacion_archivo,
+                 'estado' => $file->estado,
+                 'publico' => $file->publico,
+                 'usuarios_id' => $file->usuarios_id,
+             ];
+         });
+         if ($request->wantsJson()) {
+             return response()->json($files, 200);
+         }
+         return Inertia::render('Files/List', [
+             'files' => $files,
+         ]);
+     }
 }
