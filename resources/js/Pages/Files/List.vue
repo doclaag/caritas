@@ -4,14 +4,15 @@ import axios from 'axios';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import NavLink from '@/Components/NavLink.vue';
+
+import NavLinkFiles from '@/Components/NavLinkFiles.vue';
 
 const files = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const loading = ref(true);
 const error = ref(null);
-const searchTerm = ref(''); 
+const searchTerm = ref('');
 
 const fetchFiles = async (page = 1) => {
     loading.value = true;
@@ -68,19 +69,7 @@ const filteredFiles = computed(() => {
 <template>
     <AppLayout title="File List">
         <template #header>
-            <div class="flex">
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <NavLink :href=" route( 'list' ) " :active=" route().current( 'list' ) ">
-                        Lista de Archivos
-                    </NavLink>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <NavLink :href=" route( 'files' ) " :active=" route().current( 'files' ) ">
-                        Subir Archivos
-                    </NavLink>
-                </div>
-            </div>
+            <NavLinkFiles />
         </template>
 
         <div class="py-5 flex items-center justify-center space-x-8">
@@ -89,7 +78,7 @@ const filteredFiles = computed(() => {
                 <img src="/img/search.svg" class="w-6 h-6" />
                 <input type="text" placeholder="Buscar archivos..." class="border rounded-md px-3 py-2" v-model="searchTerm" />
             </div>
-            <!-- Search Bar- Busqueda comentada no se sabe si se va a implementar--> 
+            <!-- Search Bar- Busqueda comentada no se sabe si se va a implementar-->
             <!-- <div class="flex items-center space-x-2">
                 <img src="/img/search.svg" class="w-6 h-6" />
                 <input type="text" placeholder="Buscar etiquetas..." class="border rounded-md px-3 py-2" />

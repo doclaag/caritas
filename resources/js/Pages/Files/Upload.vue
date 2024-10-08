@@ -4,9 +4,10 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import CustomTag from '@/Components/CustomTag.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import NavLink from '@/Components/NavLink.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
 import axios from 'axios';
+
+import NavLinkFiles from '@/Components/NavLinkFiles.vue';
 
 const categoriasPrincipales = ref([]);
 const subcategorias = ref([]);
@@ -123,18 +124,7 @@ const showNotification = (type, message) => {
 <template>
     <AppLayout title="File-Upload">
         <template #header>
-            <div class="flex">
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <NavLink :href="route('list')" :active="route().current('list')">
-                        Lista de Archivos
-                    </NavLink>
-                </div>
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <NavLink :href="route('files')" :active="route().current('files')">
-                        Subir Archivos
-                    </NavLink>
-                </div>
-            </div>
+            <NavLinkFiles/>
         </template>
 
         <div class="py-12">
