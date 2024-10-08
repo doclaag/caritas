@@ -32,14 +32,22 @@ Route::get('/files/upload', function () {
     return Inertia::render('Files/Upload');
 })->name('files');
 
-
 // Ruta para subir archivos
 Route::middleware(['auth'])->group(function () {
     Route::post('/files/upload', [FileController::class, 'upload']);
 });
 
-//Ruta para obtener las categorias.
+// Ruta para obtener las categorías.
 Route::middleware(['auth'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'getCategorias'])->name('categories');
     Route::get('/tags', [TagController::class, 'index']);
+});
+
+// Ruta para crear, actualizar y eliminar categorías.
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tags', [TagController::class, 'index']);
+    Route::post('/tags', [TagController::class, 'store']);
+    Route::put('/tags/{tag}', [TagController::class, 'update']);
+    Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
+    Route::put('/tags/{tag}/estado', [TagController::class, 'cambiarEstado']);
 });

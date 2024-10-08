@@ -33,14 +33,6 @@ class TagController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
-    {
-        return response()->json($tag);
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Tag $tag)
@@ -57,11 +49,28 @@ class TagController extends Controller
     }
 
     /**
+     * Cambiar el estado de una etiqueta (Eliminar lógicamente).
+     */
+    public function cambiarEstado(Request $request, Tag $tag)
+    {
+        $request->validate([
+            'estado' => 'required|boolean',
+        ]);
+
+        // Actualiza el estado de la etiqueta
+        $tag->estado = $request->estado;
+        $tag->save();
+
+        return response()->json(['message' => 'Estado actualizado correctamente']);
+    }
+
+    /**
      * Remove the specified resource from storage.
+     * En este caso no elimina, solo cambia el estado a 0 (soft delete).
      */
     public function destroy(Tag $tag)
     {
-        $tag->delete();
+        $tag->update(['estado' => 0]);
         return response()->json(null, 204);
     }
 }
