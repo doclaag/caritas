@@ -20,4 +20,8 @@ class CategoryModel extends Model
         'categoria_principal',
         'categoria_padre'
      ];
+     public function subcategorias()
+     {
+         return $this->hasMany(CategoryModel::class, 'categoria_padre');
+     }
 }
