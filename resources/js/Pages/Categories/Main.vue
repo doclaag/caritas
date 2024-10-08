@@ -4,6 +4,8 @@ import axios from 'axios';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
+import CustomTagGreen from '@/Components/CustomTagGreen.vue'; // Importa el nuevo componente
 
 const principales = ref([]);
 const secundarias = ref([]);
@@ -29,6 +31,21 @@ const extraField = ref(''); // Campo extra que has solicitado
 
 const successMessage = ref('');
 const displayingToken = ref(false);
+
+const notification = ref({
+  visible: false,
+  message: '',
+  type: 'success'
+});
+
+const showNotification = (message, type = 'success') => {
+  notification.value.message = message;
+  notification.value.type = type;
+  notification.value.visible = true;
+  setTimeout(() => {
+    notification.value.visible = false;
+  }, 3000);
+};
 
 onMounted(async () => {
     try {
@@ -60,6 +77,7 @@ const submitForm = async () => {
             await loadTags();
             successMessage.value = 'Etiqueta creada con éxito';
             displayingToken.value = true;
+            showNotification('Etiqueta creada con éxito');
         }
     } catch (err) {
         etiquetaFormError.value = err.response?.data?.message || 'Error desconocido al enviar el formulario';
@@ -80,19 +98,27 @@ const updateEtiquetaForm = async () => {
         await loadTags();
         successMessage.value = 'Etiqueta actualizada con éxito';
         displayingToken.value = true;
+        showNotification('Etiqueta actualizada con éxito');
     } catch (err) {
         etiquetaFormError.value = err.response?.data?.message || 'Error desconocido al actualizar la etiqueta';
     }
 };
 
-const deleteEtiqueta = async (etiqueta) => {
+const deactivateEtiqueta = async (etiqueta) => {
     try {
-        await axios.delete(`/tags/${etiqueta.id}`, { withCredentials: true });
+        await axios.put(`/tags/${etiqueta.id}`, {
+            estado: false
+        }, { withCredentials: true });
         await loadTags();
-        successMessage.value = 'Etiqueta eliminada con éxito';
+        successMessage.value = 'Etiqueta desactivada con éxito';
         displayingToken.value = true;
+        showNotification('Etiqueta desactivada con éxito');
+        // Limpiar campos del formulario
+        nombreEtiqueta.value = '';
+        descripcionEtiqueta.value = '';
+        selectedEtiqueta.value = null;
     } catch (err) {
-        error.value = err.response?.data?.message || 'Error desconocido al eliminar la etiqueta';
+        error.value = err.response?.data?.message || 'Error desconocido al desactivar la etiqueta';
     }
 };
 
@@ -125,6 +151,12 @@ const selectEtiqueta = (etiqueta) => {
     descripcionEtiqueta.value = etiqueta.descripcion_etiqueta;
 };
 
+const clearEtiquetaForm = () => {
+    nombreEtiqueta.value = '';
+    descripcionEtiqueta.value = '';
+    selectedEtiqueta.value = null;
+};
+
 const filteredItems = computed(() => {
     let items = [];
     if (filterType.value === 'all' || filterType.value === 'rutas') {
@@ -138,6 +170,31 @@ const filteredItems = computed(() => {
     }
     return items;
 });
+
+const etiquetas = computed(() => {
+    return secundarias.value.map(etiqueta => ({
+        id: etiqueta.id,
+        nombre_etiqueta: etiqueta.nombre_etiqueta,
+        color: 'green'
+    }));
+});
+
+const selectedTags = ref([]);
+const resetTags = ref(false);
+
+const updateSelectedTags = (newSelectedTags) => {
+    selectedTags.value = newSelectedTags;
+    if (newSelectedTags.length === 1) {
+        const selectedTag = secundarias.value.find(tag => tag.id === newSelectedTags[0]);
+        if (selectedTag) {
+            nombreEtiqueta.value = selectedTag.nombre_etiqueta;
+            descripcionEtiqueta.value = selectedTag.descripcion_etiqueta;
+            selectedEtiqueta.value = selectedTag; // Asegúrate de actualizar selectedEtiqueta
+        }
+    } else {
+        clearEtiquetaForm();
+    }
+};
 </script>
 
 <template>
@@ -222,9 +279,9 @@ const filteredItems = computed(() => {
                                 </div>
 
                                 <div class="mb-4">
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                    <PrimaryButton type="submit">
                                         {{ selectedRuta ? 'Actualizar Ruta' : 'Crear Ruta' }}
-                                    </button>
+                                    </PrimaryButton>
                                 </div>
 
                                 <div v-if="formError" class="text-red-500 text-center mb-4">
@@ -246,30 +303,20 @@ const filteredItems = computed(() => {
                                     <label for="descripcion_etiqueta" class="block text-gray-700">Descripción</label>
                                     <textarea id="descripcion_etiqueta" v-model="descripcionEtiqueta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required></textarea>
                                 </div>
-                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-black-700">
+                                <div class="flex space-x-4">
+                                    <PrimaryButton type="submit">
                                         {{ selectedEtiqueta ? 'Actualizar Etiqueta' : 'Crear Etiqueta' }}
-                                    </button>
-
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-black-700">
-                                        Limpiar Etiqueta 
-                                    </button>
-
-                                <div 
-                                class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded max-h-64 overflow-y-auto">
-                                    <h3 class="font-semibold text-lg text-gray-800 mb-4">Etiquetas Creadas</h3>
-                                    <div v-if="secundarias.length === 0" class="text-center text-gray-500 mb-4">
-                                        No hay etiquetas disponibles.
-                                    </div>
-                                    <div v-else>
-                                        <div v-for="etiqueta in secundarias" :key="etiqueta.id" class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded cursor-pointer" @click="selectEtiqueta(etiqueta)">
-                                            <h3 class="font-semibold text-lg text-gray-800">{{ etiqueta.nombre_etiqueta }}</h3>
-                                            <p class="text-gray-700">{{ etiqueta.descripcion_etiqueta }}</p>
-                                        </div>
-                                    </div>
+                                    </PrimaryButton>
+                                    <PrimaryButton type="button" @click="clearEtiquetaForm">
+                                        Limpiar Etiqueta
+                                    </PrimaryButton>
+                                    <PrimaryButton type="button" @click="deactivateEtiqueta(selectedEtiqueta)" v-if="selectedEtiqueta">
+                                        Desactivar Etiqueta
+                                    </PrimaryButton>
                                 </div>
 
-                                <div class="mb-4">
-                                    
+                                <div class="mt-4">
+                                    <CustomTagGreen :label="'Etiquetas'" :items="etiquetas" :selected-items="selectedTags" @update-selected-items="updateSelectedTags" :reset="resetTags" />
                                 </div>
 
                                 <div v-if="etiquetaFormError" class="text-red-500 text-center mb-4">
@@ -278,12 +325,9 @@ const filteredItems = computed(() => {
                             </form>
                         </div>
                     </div>
-
-                    <div v-if="successMessage" class="text-green-500 text-center">
-                        {{ successMessage }}
-                    </div>
                 </div>
             </div>
         </div>
+        <ToastNotification v-if="notification.visible" :message="notification.message" :type="notification.type" @close="notification.visible = false" />
     </AppLayout>
 </template>
