@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\File;
 use App\Models\CategoryModel;
+use App\Models\FileCategory;
 use App\Models\FileTag;
 use Inertia\Inertia;
 
@@ -91,6 +92,19 @@ class FileController extends Controller
             ]);
         }
 
+        // Crear la relación en la tabla archivos_categorias
+        FileCategory::create([
+            'archivo_id' => $archivo->id,
+            'categoria_id' => $categoriaPrincipalId,
+            'usuarios_id' => $userId,
+        ]);
+        if ($subcategoriaId) {
+            FileCategory::create([
+                'archivo_id' => $archivo->id,
+                'categoria_id' => $subcategoriaId,
+                'usuarios_id' => $userId,
+            ]);
+        }
         return response()->json(['message' => 'Archivo subido correctamente e insertado en la base de datos'], 200);
     }
 
