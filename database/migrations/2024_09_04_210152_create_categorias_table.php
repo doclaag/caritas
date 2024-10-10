@@ -13,6 +13,7 @@ class CreateCategoriasTable extends Migration
             $table->string('nombre_categoria');
             $table->string('descripcion_categoria');
             $table->boolean('categoria_principal');
+            $table->integer('categoria_padre'); 
             $table->timestamps();
         });
     }
