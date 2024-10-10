@@ -5,7 +5,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
-import CustomTagGreen from '@/Components/CustomTagGreen.vue'; // Importa el nuevo componente
+import CustomTagGreen from '@/Components/CustomTagGreen.vue';
+import Search from '@/Pages/Categories/search.vue'; // Importa el nuevo componente
 
 const principales = ref([]);
 const secundarias = ref([]);
@@ -23,9 +24,6 @@ const selectedEtiqueta = ref(null);
 
 const activeTab = ref('rutas');
 const selectedRuta = ref(null);
-
-const searchQuery = ref('');
-const filterType = ref('all');
 
 const extraField = ref(''); // Campo extra que has solicitado
 
@@ -157,20 +155,6 @@ const clearEtiquetaForm = () => {
     selectedEtiqueta.value = null;
 };
 
-const filteredItems = computed(() => {
-    let items = [];
-    if (filterType.value === 'all' || filterType.value === 'rutas') {
-        items = items.concat(principales.value);
-    }
-    if (filterType.value === 'all' || filterType.value === 'etiquetas') {
-        items = items.concat(secundarias.value);
-    }
-    if (searchQuery.value) {
-        items = items.filter(item => item.nombre_categoria.toLowerCase().includes(searchQuery.value.toLowerCase()));
-    }
-    return items;
-});
-
 const etiquetas = computed(() => {
     return secundarias.value.map(etiqueta => ({
         id: etiqueta.id,
@@ -221,34 +205,7 @@ const updateSelectedTags = (newSelectedTags) => {
                     <div v-else>
                         <!-- Tab Búsqueda -->
                         <div v-if="activeTab === 'busqueda'">
-                            <h3 class="font-semibold text-lg text-gray-800 mb-4">Búsqueda</h3>
-                            <form class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded">
-                                <div class="mb-4 flex space-x-4">
-                                    <div class="flex-1">
-                                        <label for="search" class="block text-gray-700">Buscar</label>
-                                        <input type="text" id="search" v-model="searchQuery" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    </div>
-                                    <div class="flex-1">
-                                        <label for="filter" class="block text-gray-700">Filtrar por tipo</label>
-                                        <select id="filter" v-model="filterType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                            <option value="all">Todos</option>
-                                            <option value="rutas">Rutas</option>
-                                            <option value="etiquetas">Etiquetas</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="p-4 bg-gray-100 border border-gray-300 rounded max-h-64 overflow-y-auto">
-                                <div v-if="filteredItems.length === 0" class="text-center text-gray-500 mb-4">
-                                    No hay resultados disponibles.
-                                </div>
-                                <div v-else>
-                                    <div v-for="item in filteredItems" :key="item.id" class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded">
-                                        <h3 class="font-semibold text-lg text-gray-800">{{ item.nombre_categoria }}</h3>
-                                        <p class="text-gray-700">{{ item.descripcion_categoria }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <Search />
                         </div>
 
                         <!-- Tab Rutas -->
