@@ -142,4 +142,23 @@ class FileController extends Controller
             'files' => $files,
         ]);
     }
+public function listPublicFiles(Request $request)
+{
+    $files = File::where('publico', 1)->paginate(10);
+    $files->getCollection()->transform(function ($file) {
+        return [
+            'name' => $file->nombre_archivo,
+            'url' => $file->ubicacion_archivo,
+            'estado' => $file->estado,
+            'publico' => $file->publico,
+            'usuarios_id' => $file->usuarios_id,
+        ];
+    });
+    if ($request->wantsJson()) {
+        return response()->json($files, 200);
+    }
+    return Inertia::render('Files/List', [
+        'files' => $files,
+    ]);
+}
 }
